@@ -9,8 +9,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "echo \"No tests\"",
-    "preview": "vite preview",
-    "test:api": "newman run tests/coleccion.json"
+    "preview": "vite preview"
   },
 =======
   "dev": "vite",
