@@ -1,0 +1,200 @@
+{
+  "info": {
+    "_postman_id": "pos-tests-001",
+    "name": "Pruebas POS (CP-006 y CP-007)",
+    "description": "Automatización POS corregida",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "CP-007 - Crear producto",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "apikey", "value": "{{apiKey}}" },
+          { "key": "Authorization", "value": "Bearer {{apiKey}}" },
+          { "key": "Prefer", "value": "return=representation" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["products"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Galleta Maria\",\n  \"code\": \"750100000012\",\n  \"stock\": 20,\n  \"purchase_price\": 6,\n  \"sale_price\": 10\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Producto creado correctamente\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "if (pm.response.code === 201) {",
+              "  const res = pm.response.json()[0];",
+              "  pm.environment.set(\"productoId\", res.id);",
+              "  pm.environment.set(\"stockInicial\", res.stock);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "CP-006 - Abrir sesión de caja",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "apikey", "value": "{{apiKey}}" },
+          { "key": "Authorization", "value": "Bearer {{apiKey}}" },
+          { "key": "Prefer", "value": "return=representation" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/cash_sessions",
+          "host": ["{{baseUrl}}"],
+          "path": ["cash_sessions"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"opening_amount\": 0 }"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Caja abierta correctamente\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "if (pm.response.code === 201) {",
+              "  const res = pm.response.json()[0];",
+              "  pm.environment.set(\"sessionId\", res.id);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "CP-006 - Crear venta",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "apikey", "value": "{{apiKey}}" },
+          { "key": "Authorization", "value": "Bearer {{apiKey}}" },
+          { "key": "Prefer", "value": "return=representation" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/sales",
+          "host": ["{{baseUrl}}"],
+          "path": ["sales"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cash_session_id\": \"{{sessionId}}\",\n  \"payment_method\": \"efectivo\",\n  \"total\": 20\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Venta creada\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "if (pm.response.code === 201) {",
+              "  const res = pm.response.json()[0];",
+              "  pm.environment.set(\"saleId\", res.id);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "CP-006 - Insertar items de venta",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "apikey", "value": "{{apiKey}}" },
+          { "key": "Authorization", "value": "Bearer {{apiKey}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/sale_items",
+          "host": ["{{baseUrl}}"],
+          "path": ["sale_items"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sale_id\": \"{{saleId}}\",\n  \"product_id\": \"{{productoId}}\",\n  \"quantity\": 2,\n  \"price\": 10,\n  \"subtotal\": 20\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Item agregado a la venta\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "CP-006 - Validar inventario actualizado",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "apikey", "value": "{{apiKey}}" },
+          { "key": "Authorization", "value": "Bearer {{apiKey}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/products?id=eq.{{productoId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["products"],
+          "query": [
+            { "key": "id", "value": "eq.{{productoId}}" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Consulta exitosa\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "if (pm.response.code === 200) {",
+              "  const res = pm.response.json()[0];",
+              "  const stockInicial = Number(pm.environment.get(\"stockInicial\"));",
+              "",
+              "  pm.test(\"Stock descontado correctamente\", function () {",
+              "    pm.expect(res.stock).to.eql(stockInicial - 2);",
+              "  });",
+              "}"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

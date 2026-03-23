@@ -1,0 +1,36 @@
+{
+  "id": "env-pos",
+  "name": "Supabase POS",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "https://qtzzjmoyundeybhaqmms.supabase.co/rest/v1",
+      "enabled": true
+    },
+    {
+      "key": "apiKey",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0enpqbW95dW5kZXliaGFxbW1zIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDIwODI4MiwiZXhwIjoyMDg5Nzg0MjgyfQ.YHjta5oq7Sjgslk5sGDKTRWG_bdg8G8Upcla7XjJQxE",
+      "enabled": true
+    },
+    {
+      "key": "productoId",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "sessionId",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "saleId",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "stockInicial",
+      "value": "",
+      "enabled": true
+    }
+  ]
+}
